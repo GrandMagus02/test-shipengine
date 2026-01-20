@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.db.database import async_get_db
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.crud.crud_warehouses import crud_warehouses
 from app.schemas.warehouse import WarehouseCreate, WarehouseRead, WarehouseUpdate
-
-from ...core.db.database import async_get_db
-from ...core.exceptions.http_exceptions import NotFoundException
+from app.services.service_warehouses import service_warehouses
 
 router = APIRouter(tags=["warehouses"], prefix="/warehouses")
 
@@ -32,9 +32,9 @@ async def create_warehouse(
     warehouse: WarehouseCreate,
     db: Annotated[AsyncSession, Depends(async_get_db)],
 ) -> Response:
-    await crud_warehouses.create(
+    await service_warehouses.create_warehouse(
         db=db,
-        object=warehouse,
+        warehouse=warehouse,
         schema_to_select=WarehouseRead,
     )
     return Response(status_code=201)
