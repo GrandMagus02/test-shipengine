@@ -5,9 +5,12 @@ from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.logger import logging
-from ...schemas.rate_limit import sanitize_path
 
 logger = logging.getLogger(__name__)
+
+
+def sanitize_path(path: str) -> str:
+    return path.strip("/").replace("/", "_")
 
 
 class RateLimiter:
