@@ -18,10 +18,13 @@ class Warehouse(WarehouseBase, TimestampSchema):
     return_address_id: Annotated[int, Field(examples=[2])]
 
 
-class WarehouseRead(BaseModel):
+class WarehouseRead(WarehouseBase):
+    created_at: datetime
+
+
+class WarehouseReadDetailed(WarehouseRead):
     origin_address: AddressRead
     return_address: AddressRead
-    created_at: datetime
 
 
 class WarehouseCreate(WarehouseBase):
@@ -41,8 +44,17 @@ class WarehouseCreateInternal(WarehouseBase):
 class WarehouseUpdate(WarehouseBase):
     model_config = ConfigDict(extra="forbid")
 
+    origin_address: AddressCreate | None = None
+    return_address: AddressCreate | None = None
 
-class WarehouseUpdateInternal(WarehouseUpdate):
+
+class WarehouseUpdateInternal(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: Annotated[str, Field(examples=["Warehouse 1"])] | None = None
+    is_default: Annotated[bool, Field(examples=[True])] | None = None
+    origin_address_id: Annotated[int, Field(examples=[1])] | None = None
+    return_address_id: Annotated[int, Field(examples=[2])] | None = None
     updated_at: datetime
 
 
