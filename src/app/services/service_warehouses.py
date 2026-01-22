@@ -65,7 +65,7 @@ class WarehouseService:
         warehouse: WarehouseUpdate,
     ) -> None:
         async with db.begin():
-            current_warehouse = await crud_warehouses.get(
+            current_warehouse: Warehouse | None = await crud_warehouses.get(
                 db=db,
                 id=warehouse_id,
                 schema_to_select=Warehouse,
@@ -73,13 +73,8 @@ class WarehouseService:
             if current_warehouse is None:
                 raise NotFoundException("Warehouse not found")
 
-            # Handle both dict and Pydantic model instances
-            if isinstance(current_warehouse, dict):
-                origin_address_id = current_warehouse["origin_address_id"]
-                return_address_id = current_warehouse["return_address_id"]
-            else:
-                origin_address_id = current_warehouse.origin_address_id
-                return_address_id = current_warehouse.return_address_id
+            origin_address_id = current_warehouse.origin_address_id
+            return_address_id = current_warehouse.return_address_id
 
             if warehouse.origin_address is not None:
                 origin_address = await crud_addresses.create(
