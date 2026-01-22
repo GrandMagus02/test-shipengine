@@ -1,222 +1,125 @@
-<h1 align="center"> Benav Labs FastAPI boilerplate</h1>
-<p align="center" markdown=1>
-  <i><b>Batteries-included FastAPI starter</b> with production-ready defaults, optional modules, and clear docs.</i>
-</p>
+# ShipEngine API Test Project
 
-<p align="center">
-  <a href="https://benavlabs.github.io/FastAPI-boilerplate">
-    <img src="docs/assets/FastAPI-boilerplate.png" alt="Purple Rocket with FastAPI Logo as its window." width="25%" height="auto">
-  </a>
-</p>
+Test assignment for developing CRUD methods for ShipEngine API endpoints using FastAPI, SQLAlchemy, PostgreSQL, and asynchronous technologies.
 
-<p align="center">
-📚 <a href="https://benavlabs.github.io/FastAPI-boilerplate/">Docs</a> · 🧠 <a href="https://deepwiki.com/benavlabs/FastAPI-boilerplate">DeepWiki</a> · 💬 <a href="https://discord.com/invite/TEmPs22gqB">Discord</a>
-</p>
+## 📋 Project Description
 
-<p align="center">
-  <a href="https://fastapi.tiangolo.com">
-      <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI">
-  </a>
-  <a href="https://www.postgresql.org">
-      <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  </a>
-  <a href="https://redis.io">
-      <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=fff&style=for-the-badge" alt="Redis">
-  </a>
-  <a href="https://deepwiki.com/benavlabs/FastAPI-boilerplate">
-      <img src="https://img.shields.io/badge/DeepWiki-1F2937?style=for-the-badge&logoColor=white" alt="DeepWiki">
-  </a>
-</p>
+Simplified API implementation for addresses, warehouses, and shipments based on [ShipEngine OpenAPI](https://shipengine.github.io/shipengine-openapi/). Complete end-to-end request processing: from endpoint to database write/read operations.
 
-## Features
+## 🏗️ Architecture
 
-* ⚡️ Fully async FastAPI + SQLAlchemy 2.0
-* 🧱 Pydantic v2 models & validation
-* 🔐 JWT auth (access + refresh), cookies for refresh
-* 👮 Rate limiter + tiers (free/pro/etc.)
-* 🧰 FastCRUD for efficient CRUD & pagination
-* 🧑‍💼 **CRUDAdmin**: minimal admin panel (optional)
-* 🚦 ARQ background jobs (Redis)
-* 🧊 Redis caching (server + client-side headers)
-* 🌐 Configurable CORS middleware for frontend integration
-* 🐳 One-command Docker Compose
-* 🚀 NGINX & Gunicorn recipes for prod
+Based on [FastAPI-boilerplate](https://benavlabs.github.io/FastAPI-boilerplate/) from Benav Labs. Architecture was barely modified as the standard structure is adequate for the tasks.
 
-## Why and When to use it
+**Service Layer** (`src/app/services/`) — the only significant addition. Handles:
+- Creating/updating entities with relationships (addresses, warehouses, shipments)
+- Transaction management for multiple related entities
+- Business logic beyond simple CRUD operations
 
-**Perfect if you want:**
-
-* A pragmatic starter with auth, CRUD, jobs, caching and rate-limits
-* **Sensible defaults** with the freedom to opt-out of modules
-* **Docs over boilerplate** in README - depth lives in the site
-
-> **Not a fit** if you need a monorepo microservices scaffold - [see the docs](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/project-structure/) for pointers.
-
-**What you get:**
-
-* **App**: FastAPI app factory, [env-aware docs](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/development/) exposure
-* **Auth**: [JWT access/refresh](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/authentication/), logout via token blacklist
-* **DB**: Postgres + SQLAlchemy 2.0, [Alembic migrations](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/database/)
-* **CRUD**: [FastCRUD generics](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/database/crud/) (get, get_multi, create, update, delete, joins)
-* **Caching**: [decorator-based endpoints cache](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/caching/); client cache headers
-* **Queues**: [ARQ worker](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/background-tasks/) (async jobs), Redis connection helpers
-* **Rate limits**: [per-tier + per-path rules](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/rate-limiting/)
-* **Admin**: [CRUDAdmin views](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/admin-panel/) for common models (optional)
-
-This is what we've been using in production apps. Several applications running in production started from this boilerplate as their foundation - from SaaS platforms to internal tools. It's proven, stable technology that works together reliably. Use this as the foundation for whatever you want to build on top.
-
-> **Building an AI SaaS?** Skip even more setup with [**FastroAI**](https://fastro.ai) - our production-ready template with AI integration, payments, and frontend included.
-
-## TL;DR - Quickstart
-
-Use the template on GitHub, create your repo, then:
-
-```bash
-git clone https://github.com/<you>/FastAPI-boilerplate
-cd FastAPI-boilerplate
+```
+src/app/
+├── api/v1/          # API endpoints
+├── services/         # Business logic (added)
+├── crud/             # CRUD operations (FastCRUD)
+├── models/           # SQLAlchemy models
+├── schemas/          # Pydantic schemas
+├── core/             # Configuration, DB, utilities
+└── middleware/       # Logging, caching
 ```
 
-**Quick setup:** Run the interactive setup script to choose your deployment configuration:
+## 📦 Entities
 
-```bash
-./setup.py
+Three main entities from ShipEngine API:
+
+1. **Address** — base entity for address information
+2. **Warehouse** — warehouse with origin/return addresses
+3. **Shipment** — shipment with warehouse and address references
+
+**Simplifications:**
+- Address: simplified structure, no real validation API integration
+- Warehouse: basic fields only (name, addresses, default flag)
+- Shipment: basic fields, simple status progression logic, no carrier API integration
+
+## 🔧 Technology Stack
+
+**Required:** Python 3.11+, FastAPI, SQLAlchemy 2.0, PostgreSQL, AsyncIO, asyncpg, ARQ
+
+**Additional:** FastCRUD, Pydantic v2, Alembic, Redis, Uvicorn, structlog
+
+## 🚀 Functionality
+
+### CRUD Operations
+
+**Warehouses:** `GET /api/v1/warehouses`, `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`
+
+**Shipments:** `GET /api/v1/shipments` (paginated), `POST`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `POST /{id}/update-tracking`
+
+All create/update operations use transactions (`async with db.begin()`) for data integrity.
+
+### Background Tasks (ARQ Worker)
+
+Worker `update_shipment_tracking_status` implements status progression: `PENDING → PROCESSING → SHIPPED → IN_TRANSIT → DELIVERED`. Auto-schedules next update in 5 minutes (unless terminal status: `DELIVERED`, `CANCELLED`, `FAILED`).
+
+**Note:** Worker implemented solely to demonstrate ARQ usage. In a real project, endpoints are simple enough and don't require background processing.
+
+## 🧪 Testing
+
+Tests cover:
+- API endpoint `update_shipment_tracking` (success, errors, queue handling)
+- Worker `update_shipment_tracking_status` (status progression, terminal states, error handling)
+
+Run: `pytest tests/`
+
+## 🔄 Data Flow
+
+```
+API Layer → Service Layer → CRUD Layer → Model Layer → Response
 ```
 
-Or directly specify the deployment type: `./setup.py local`, `./setup.py staging`, or `./setup.py production`.
+Example: `POST /api/v1/shipments` → validates warehouse → creates addresses → creates shipment (all in transaction) → enqueues background job
 
-The script copies the right files for your deployment scenario. Here's what each option sets up:
+## 📊 Database
 
-### Option 1: Local development with Uvicorn
+**Schema:**
+- `address` (id, name, email, phone, address fields, country_code, timestamps)
+- `warehouse` (id, name, is_default, origin_address_id, return_address_id, timestamps)
+- `shipment` (id, warehouse_id, ship_to_id, ship_from_id, carrier, service_code, tracking_number, status, timestamps)
 
-Best for: **Development and testing**
+**Migrations:** `cd src && uv run alembic revision --autogenerate && uv run alembic upgrade head`
 
-**Copies:**
+## 🚧 Production Requirements
 
-- `scripts/local_with_uvicorn/Dockerfile` → `Dockerfile`
-- `scripts/local_with_uvicorn/docker-compose.yml` → `docker-compose.yml`
-- `scripts/local_with_uvicorn/.env.example` → `src/.env`
+1. **Rate Limiting** — connect existing infrastructure to endpoints
+2. **Security/Authorization** — add JWT authentication, protect endpoints
+3. **Tests** — integration tests, transaction tests, business logic tests, API tests
+4. **Improvements** — address validation API, better error handling, structured logging, monitoring
 
-Sets up Uvicorn with auto-reload enabled. The example environment values work fine for development.
+## 🏃 Running
 
-**Manual setup:** `./setup.py local` or copy the files above manually.
+**Requirements:** Python 3.11+, PostgreSQL, Redis
 
-### Option 2: Staging with Gunicorn managing Uvicorn workers
-
-Best for: **Staging environments and load testing**
-
-**Copies:**
-
-- `scripts/gunicorn_managing_uvicorn_workers/Dockerfile` → `Dockerfile`
-- `scripts/gunicorn_managing_uvicorn_workers/docker-compose.yml` → `docker-compose.yml`
-- `scripts/gunicorn_managing_uvicorn_workers/.env.example` → `src/.env`
-
-Sets up Gunicorn managing multiple Uvicorn workers for production-like performance testing.
-
-> [!WARNING]
-> Change `SECRET_KEY` and passwords in the `.env` file for staging environments.
-
-**Manual setup:** `./setup.py staging` or copy the files above manually.
-
-### Option 3: Production with NGINX
-
-Best for: **Production deployments**
-
-**Copies:**
-
-- `scripts/production_with_nginx/Dockerfile` → `Dockerfile`
-- `scripts/production_with_nginx/docker-compose.yml` → `docker-compose.yml`
-- `scripts/production_with_nginx/.env.example` → `src/.env`
-
-Sets up NGINX as reverse proxy with Gunicorn + Uvicorn workers for production.
-
-> [!CAUTION]
-> You MUST change `SECRET_KEY`, all passwords, and sensitive values in the `.env` file before deploying!
-
-**Manual setup:** `./setup.py production` or copy the files above manually.
-
----
-
-**Start your application:**
-
+**Local:**
 ```bash
-docker compose up
+uv sync
+cp scripts/local_with_uvicorn/.env.example src/.env
+docker compose up -d postgres redis
+cd src && uv run alembic upgrade head
+uv run uvicorn src.app.main:app --reload
+# In separate terminal:
+cd src && uv run python -m app.core.worker.settings
 ```
 
-**Access your app:**
-- **Local**: http://127.0.0.1:8000 (auto-reload enabled) → [API docs](http://127.0.0.1:8000/docs)
-- **Staging**: http://127.0.0.1:8000 (production-like performance)
-- **Production**: http://localhost (NGINX reverse proxy)
+**Docker:** `docker compose up`
 
-### Next steps
+App: `http://localhost:8000`, Docs: `http://localhost:8000/docs`
 
-**Create your first admin user:**
-```bash
-docker compose run --rm create_superuser
-```
+## 📚 Resources
 
-**Run database migrations** (if you add models):
-```bash
-cd src && uv run alembic revision --autogenerate && uv run alembic upgrade head
-```
+- [FastAPI Boilerplate Guide](https://benavlabs.github.io/FastAPI-boilerplate/user-guide/)
+- [ShipEngine OpenAPI](https://shipengine.github.io/shipengine-openapi/)
+- [FastAPI Docs](https://fastapi.tiangolo.com/)
+- [SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/)
+- [ARQ Docs](https://arq-docs.helpmanual.io/)
 
-**Test background jobs:**
-```bash
-curl -X POST 'http://127.0.0.1:8000/api/v1/tasks/task?message=hello'
-```
+## 📄 License
 
-**Or run locally without Docker:**
-```bash
-uv sync && uv run uvicorn src.app.main:app --reload
-```
-
-> Full setup (from-scratch, .env examples, PostgreSQL & Redis, gunicorn, nginx) lives in the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/installation/).
-
-## Configuration (minimal)
-
-Create `src/.env` and set **app**, **database**, **JWT**, and **environment** settings. See the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/) for a copy-pasteable example and production guidance.
-
-[https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/configuration/)
-
-* `ENVIRONMENT=local|staging|production` controls API docs exposure
-* Set `ADMIN_*` to enable the first admin user
-
-## Common tasks
-
-```bash
-# run locally with reload (without Docker)
-uv sync && uv run uvicorn src.app.main:app --reload
-
-# run Alembic migrations
-cd src && uv run alembic revision --autogenerate && uv run alembic upgrade head
-
-# enqueue a background job (example endpoint)
-curl -X POST 'http://127.0.0.1:8000/api/v1/tasks/task?message=hello'
-```
-
-More examples (superuser creation, tiers, rate limits, admin usage) in the [docs](https://benavlabs.github.io/FastAPI-boilerplate/getting-started/first-run/).
-
-## Contributing
-
-Read [contributing](CONTRIBUTING.md).
-
-## References
-
-This project was inspired by a few projects, it's based on them with things changed to the way I like (and pydantic, sqlalchemy updated)
-
-- [`Full Stack FastAPI and PostgreSQL`](https://github.com/tiangolo/full-stack-fastapi-postgresql) by @tiangolo himself
-- [`FastAPI Microservices`](https://github.com/Kludex/fastapi-microservices) by @kludex which heavily inspired this boilerplate
-- [`Async Web API with FastAPI + SQLAlchemy 2.0`](https://github.com/rhoboro/async-fastapi-sqlalchemy) for sqlalchemy 2.0 ORM examples
-- [`FastaAPI Rocket Boilerplate`](https://github.com/asacristani/fastapi-rocket-boilerplate/tree/main) for docker compose
-
-## License
-
-[`MIT`](LICENSE.md)
-
-## Contact
-
-Benav Labs – [benav.io](https://benav.io), [discord server](https://discord.com/invite/TEmPs22gqB)
-
-<hr>
-<a href="https://benav.io">
-  <img src="https://github.com/benavlabs/fastcrud/raw/main/docs/assets/benav_labs_banner.png" alt="Powered by Benav Labs - benav.io"/>
-</a>
+MIT
