@@ -1,7 +1,5 @@
 from datetime import UTC, datetime
-from typing import TypeVar
 
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.exceptions.http_exceptions import NotFoundException
@@ -15,16 +13,13 @@ from ..schemas.warehouse import (
     WarehouseUpdateInternal,
 )
 
-T = TypeVar("T", bound=BaseModel)
-
 
 class WarehouseService:
     @staticmethod
     async def create_warehouse(
         db: AsyncSession,
         warehouse: WarehouseCreate,
-        schema_to_select: type[T] = Warehouse,
-    ) -> T:
+    ):
         async with db.begin():
             origin_address = await crud_addresses.create(
                 db=db,
@@ -52,7 +47,6 @@ class WarehouseService:
             result = await crud_warehouses.create(
                 db=db,
                 object=warehouse_create,
-                schema_to_select=schema_to_select,
                 commit=False,
             )
 

@@ -1,7 +1,5 @@
 from datetime import UTC, datetime
-from typing import TypeVar
 
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.exceptions.http_exceptions import NotFoundException
@@ -17,16 +15,13 @@ from ..schemas.shipment import (
     ShipmentUpdateInternal,
 )
 
-T = TypeVar("T", bound=BaseModel)
-
 
 class ShipmentService:
     @staticmethod
     async def create_shipment(
         db: AsyncSession,
         shipment: ShipmentCreate,
-        schema_to_select: type[T] = Shipment,
-    ) -> T:
+    ):
         async with db.begin():
             warehouse = await crud_warehouses.get(
                 db=db,
@@ -60,21 +55,17 @@ class ShipmentService:
             result = await crud_shipments.create(
                 db=db,
                 object=shipment_create,
-                schema_to_select=schema_to_select,
                 commit=False,
             )
 
             if shipment.tracking_number and queue.pool is not None:
-                shipment_id = (
-                    result.id if hasattr(result, "id") else result.get("id") if isinstance(result, dict) else None
-                )
+                shipment_id = result.id
 
-                if shipment_id:
-                    await queue.pool.enqueue_job(
-                        "update_shipment_tracking_status",
-                        shipment_id,
-                        _defer_by=60,  # 1 minute
-                    )
+                await queue.pool.enqueue_job(
+                    "update_shipment_tracking_status",
+                    shipment_id,
+                    _defer_by=60,  # 1 minute
+                )
 
             return result
 
@@ -140,12 +131,7 @@ class ShipmentService:
 
             tracking_number = shipment.tracking_number
             if tracking_number is None:
-                if isinstance(current_shipment, dict):
-                    tracking_number = current_shipment.get("tracking_number")
-                else:
-                    tracking_number = (
-                        current_shipment.tracking_number if hasattr(current_shipment, "tracking_number") else None
-                    )
+                tracking_number = current_shipment.tracking_number
 
             if tracking_number and queue.pool is not None:
                 await queue.pool.enqueue_job(
