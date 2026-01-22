@@ -1,0 +1,68 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: FastAPI (Uvicorn)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--reload"
+            ],
+            "jinja": true,
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/src",
+            "envFile": "${workspaceFolder}/src/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: ARQ Worker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "arq",
+            "args": [
+                "app.core.worker.settings.WorkerSettings"
+            ],
+            "jinja": true,
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/src",
+            "envFile": "${workspaceFolder}/src/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Docker Compose: Start DB & Redis",
+            "type": "node-terminal",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "command": "docker compose -f docker-compose.dev.yml up -d db redis --remove-orphans && echo 'Waiting for database to be ready...' && sleep 5 && until docker compose -f docker-compose.dev.yml exec -T db pg_isready -U postgres > /dev/null 2>&1; do sleep 1; done && echo 'Database is ready!'"
+        },
+        {
+            "name": "Docker Compose: Run Dev",
+            "type": "node-terminal",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "command": "docker compose -f docker-compose.dev.yml up --remove-orphans"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Run all services",
+            "configurations": [
+                "Docker Compose: Start DB & Redis",
+                "Python: FastAPI (Uvicorn)",
+                // "Python: ARQ Worker"
+            ]
+        }
+    ]
+}

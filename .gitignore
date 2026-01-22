@@ -134,7 +134,7 @@ cython_debug/
 
 .idea
 
-.vscode/
+# .vscode/
 
 # Config files:
 src/.env
