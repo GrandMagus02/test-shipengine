@@ -4,9 +4,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.schemas.shipment import ShipmentStatus
-
 from ..core.db.database import Base
+from ..schemas.shipment import ShipmentStatus
 
 if TYPE_CHECKING:
     from ..models.address import Address

@@ -3,9 +3,8 @@ from datetime import UTC, datetime
 from sqlalchemy import DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.schemas.address import ResidentialIndicator
-
 from ..core.db.database import Base
+from ..schemas.address import ResidentialIndicator
 
 
 class Address(Base):

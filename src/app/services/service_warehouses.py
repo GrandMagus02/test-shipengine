@@ -4,10 +4,10 @@ from typing import TypeVar
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions.http_exceptions import NotFoundException
-from app.crud.crud_addresses import crud_addresses
-from app.crud.crud_warehouses import crud_warehouses
-from app.schemas.warehouse import (
+from ..core.exceptions.http_exceptions import NotFoundException
+from ..crud.crud_addresses import crud_addresses
+from ..crud.crud_warehouses import crud_warehouses
+from ..schemas.warehouse import (
     Warehouse,
     WarehouseCreate,
     WarehouseCreateInternal,

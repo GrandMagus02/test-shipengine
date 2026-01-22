@@ -3,8 +3,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.schemas import TimestampSchema
-from app.schemas.address import AddressCreate, AddressRead
+from ..core.schemas import TimestampSchema
+from ..schemas.address import AddressCreate, AddressRead
 
 
 class WarehouseBase(BaseModel):
